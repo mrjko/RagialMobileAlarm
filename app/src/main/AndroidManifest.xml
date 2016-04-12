@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mrjko.ragialmobilealarm" >
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:label="@string/app_name"
+            android:name=".MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:label="More on Notification"
+            android:name="com.mrjko.ragialalarm.MoreInfoNotification"
+            android:parentActivityName="com.mrjko.ragialmobilealarm.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+
+        </activity>
+
+        <activity
+            android:label="Item Search"
+            android:name="com.mrjko.ragialalarm.ItemSearch"
+            android:parentActivityName="com.mrjko.ragialmobilealarm.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <receiver android:exported="false" android:name="com.mrjko.ragialmobilealarm.AlertReceiver"/>
+    </application>
+</manifest>
