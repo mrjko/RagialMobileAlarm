@@ -22,8 +22,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -140,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void notifyUser()
     {
-
         NotificationCompat.Builder notificBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Ragial Notification")
                 .setContentText("An item has been sold!")
@@ -149,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent moreInfoIntent = new Intent(this, MoreInfoNotification.class);
         TaskStackBuilder tStackBuilder = TaskStackBuilder.create(this);
-        tStackBuilder.addParentStack(MoreInfoNotification.class);
+        tStackBuilder.addParentStack(MainActivity.class);
         tStackBuilder.addNextIntent(moreInfoIntent);
 
         PendingIntent pendingIntent = tStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -168,11 +165,10 @@ public class MainActivity extends AppCompatActivity {
         currentItems = parse.getItemList();
         ArrayList<String> itemNames = new ArrayList<String>();
         for (int i = 0; i < currentItems.getSize(); i++){
-            itemNames.add(currentItems.get(i).getName());
+            itemNames.add(currentItems.get(i).getName()
+                    +  "\n" + currentItems.get(i).getPrice() + " - " + currentItems.get(i).getQuantity());
         }
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, itemNames);
-    //    listView = (ListView) findViewById(R.id.vendItems);
-    //    listView.setAdapter(arrayAdapter);
         return arrayAdapter;
     }
 
