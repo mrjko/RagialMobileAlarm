@@ -30,8 +30,17 @@ public class ROItems {
         return items.size();
     }
 
-    public ROItem get(int i){
-        return items.get(i);
+    public ROItem get(int i) {
+        try {
+            return items.get(i);
+        } catch (IndexOutOfBoundsException io){
+            return null;
+        }
+    }
+
+    public void addItem(ROItem i){
+        this.items.add(i);
+        return;
     }
 
 

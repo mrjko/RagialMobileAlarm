@@ -32,6 +32,7 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentText(msgText);
 
         mBuilder.setContentIntent(notificIntent);
+        mBuilder.setVibrate(new long[]{ 1000, 1000});
         mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
         mBuilder.setAutoCancel(true);
 

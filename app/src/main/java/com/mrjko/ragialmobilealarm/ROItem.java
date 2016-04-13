@@ -44,4 +44,16 @@ public class ROItem {
         return Integer.parseInt(result);
     }
 
+    public int getPriceInteger(){
+        String qty = this.price;
+        String result = "";
+        for (int i = 0; i < qty.length(); i++){
+            char c = qty.charAt(i);
+            if (c != ',' && c != 'z'){
+                result = result + c;
+            }
+        }
+        return Integer.parseInt(result);
+    }
+
 }

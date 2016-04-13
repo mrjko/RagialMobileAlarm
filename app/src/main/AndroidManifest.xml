@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +29,7 @@
 
         <activity
             android:label="More on Notification"
-            android:name="com.mrjko.ragialalarm.MoreInfoNotification"
+            android:name="com.mrjko.ragialmobilealarm.MoreInfoNotification"
             android:parentActivityName="com.mrjko.ragialmobilealarm.MainActivity">
 
             <meta-data
@@ -38,14 +40,15 @@
 
         <activity
             android:label="Item Search"
-            android:name="com.mrjko.ragialalarm.ItemSearch"
+            android:name="com.mrjko.ragialmobilealarm.TradeInfo"
             android:parentActivityName="com.mrjko.ragialmobilealarm.MainActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
-
+        <service android:name=".VendHeadService" >
+        </service>
         <receiver android:exported="false" android:name="com.mrjko.ragialmobilealarm.AlertReceiver"/>
     </application>
 </manifest>

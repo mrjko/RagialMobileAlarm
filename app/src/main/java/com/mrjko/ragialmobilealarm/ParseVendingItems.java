@@ -1,5 +1,10 @@
 package com.mrjko.ragialmobilealarm;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
@@ -19,7 +24,6 @@ public class ParseVendingItems {
         try {
             String url = ParseCharacterURL.url.toString();
             if (url.equals("noshop")){
-                System.out.println("No shop for this vender");
                 return;
             }
             Document doc = Jsoup.connect(url).userAgent("Mozilla, Chrome").timeout(300000).get();
