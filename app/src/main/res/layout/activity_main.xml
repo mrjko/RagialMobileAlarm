@@ -96,7 +96,8 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/setAlarmBtn"
         android:textSize="6sp"
-        android:layout_marginTop="30px" />
+        android:layout_marginTop="30px"
+        android:animateLayoutChanges="true"/>
 
 
 </RelativeLayout>

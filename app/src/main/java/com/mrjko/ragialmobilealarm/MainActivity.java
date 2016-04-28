@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,10 +26,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Observer {
 
     public ROItems previousItems = new ROItems();
     public ROItems currentItems = new ROItems();
+    public VendItems vendItems;
     public static ROItems itemsSold;
     public static EditText searchField;
     public ListView listView;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static RadioButton classicBtn, renewalBtn;
     public int previousItemCount;
     private Timer timer = new Timer();
+    private ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayAdapter<String> arrayAdapter = getVendInfo();
+                arrayAdapter = getVendInfo();
+                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 listView.setAdapter(arrayAdapter);
             }
         });
@@ -72,6 +76,22 @@ public class MainActivity extends AppCompatActivity {
                 setAlarm();
             }
         });
+
+        /*
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //    view.animate();
+              //  Log.d("test", new ParseItemInfo(currentItems.get(position).getLink()).lowestPrice);
+                Log.d("test", arrayAdapter.getItem(position));
+                arrayAdapter.getItem(position).replaceAll(arrayAdapter.getItem(position), getLowestAmount(position));
+                Log.d("test", arrayAdapter.getItem(position));
+                arrayAdapter.notifyDataSetChanged();
+
+            }
+        });
+        */
 
     }
 
@@ -95,17 +115,16 @@ public class MainActivity extends AppCompatActivity {
                         .setMessage("Are you sure you want to cancel the alarm?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
                                 Log.d("test", "alarm is cancelled");
+                                vendItems.removeObserver(MainActivity.this);
                                 isAlarmSet = false;
                                 setAlarmBtn.setText("Set Alarm");
-                                stopService(new Intent(getApplication(), VendHeadService.class));
+                           //     stopService(new Intent(getApplication(), VendHeadService.class));
                                 timer.cancel();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
                                 Log.d("test", "alarm is still running");
                             }
                         })
@@ -117,11 +136,11 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 setAlarmBtn.setText("Alarmed!");
-                                itemsSold = new ROItems();
-                                startService(new Intent(getApplication(), VendHeadService.class));
+                                // state design
+                            //    startService(new Intent(getApplication(), VendHeadService.class));
                                 getVendInfo();
-                                previousItemCount = currentItems.getTotalQuantity();
-                                //   previousItems = currentItems;
+                                vendItems = new VendItems(currentItems, MainActivity.this);
+                                vendItems.saveItems();
                                 isAlarmSet = true;
                                 timer = new Timer();
                                 timer.scheduleAtFixedRate(new TimerTask() {
@@ -129,19 +148,13 @@ public class MainActivity extends AppCompatActivity {
                                     public void run() {
                                         Log.d("test", "updating info...");
                                         getVendInfo();
-
+                                        vendItems.updateItems(currentItems);
                                         if (isAlarmSet) {
-                                            if (previousItemCount != currentItems.getTotalQuantity()) {
-                                                Log.d("test", "previous is " + previousItemCount +
-                                                        " and current is " + currentItems.getTotalQuantity());
-                                                //   findSoldItems(previousItems, currentItems);
-                                                notifyUser();
-                                            }
+                                            vendItems.checkVendStatus();
                                         }
-
                                     }
 
-                                }, 500, 2 * 60 * 1000); // every 2 min
+                                }, 500, 3 * 1000); // every 2 min
 
                             }
                         })
@@ -151,38 +164,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-            }
-        }
-    }
-
-    private void findSoldItems(ROItems before, ROItems after) {
-        if (before.getSize() > after.getSize()) {
-            int j = 0;
-            for (int i = 0; i < before.getSize(); i++) {
-                if (after.get(j).getQuantityInteger() != before.get(i).getQuantityInteger()){
-                    int diff = before.get(i).getQuantityInteger() - after.get(j).getQuantityInteger();
-                    ROItem soldItem = new ROItem(before.get(i).getName(), before.get(i).getPrice(),
-                            convertToZeny(diff), before.get(i).getLink());
-                    itemsSold.addItem(soldItem);
-                }
-                //reached end of the after list, meaning the rest of the before
-                if (after.get(j) == null) {
-                    itemsSold.addItem(before.get(i));
-                }
-                if (after.get(j) != before.get(i)) {
-                    itemsSold.addItem(before.get(i));
-                    i--;
-                }
-                j++;
-            }
-        } else {
-            for (int i = 0; i < before.getSize(); i++) {
-                if (after.get(i).getQuantityInteger() != before.get(i).getQuantityInteger()) {
-                    int diff = before.get(i).getQuantityInteger() - after.get(i).getQuantityInteger();
-                    ROItem soldItem = new ROItem(before.get(i).getName(), before.get(i).getPrice(),
-                            convertToZeny(diff), before.get(i).getLink());
-                    itemsSold.addItem(soldItem);
-                }
             }
         }
     }
@@ -228,22 +209,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ArrayAdapter<String> getVendInfo() {
-        ParseCharacterURL url = new ParseCharacterURL();
+       // ParseCharacterURL url = new ParseCharacterURL();
+        new ParseCharacterURL();
         ParseVendingItems parse = new ParseVendingItems();
-        /*
-        if (parse.getItemList().getSize() == 0) {
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Sorry!")
-                    .setMessage("Can not find the merchant.")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    })
-                    .show();
-
-        }
-        */
         currentItems = parse.getItemList();
         ArrayList<String> itemNames = new ArrayList<String>();
         for (int i = 0; i < currentItems.getSize(); i++) {
@@ -274,5 +242,15 @@ public class MainActivity extends AppCompatActivity {
         return "";
     }
 
+    public String getLowestAmount(int position){
+        String result = arrayAdapter.getItem(position)
+                + "       " + new ParseItemInfo(currentItems.get(position).getLink()).lowestPrice;
+        return result;
+    }
+
+    @Override
+    public void update() {
+        notifyUser();
+    }
 
 }
