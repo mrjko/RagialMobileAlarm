@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public static ROItems itemsSold;
     public static EditText searchField;
     public ListView listView;
+    public VendHeadService vendBubble;
     public boolean isAlarmSet = false;
-    // public boolean isItemBeingSold;
     public boolean isNotificationActive;
     public int notificationID;
     private NotificationManager notificationManager;
@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
                                 Log.d("test", "alarm is cancelled");
                                 vendItems.removeObserver(MainActivity.this);
                                 isAlarmSet = false;
-                                setAlarmBtn.setText("Set Alarm");
-                           //     stopService(new Intent(getApplication(), VendHeadService.class));
+                                setAlarmBtn.setBackgroundResource(R.drawable.ic_alarmicon);
+                                stopService(new Intent(getApplication(), VendHeadService.class));
                                 timer.cancel();
                             }
                         })
@@ -135,13 +135,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         .setMessage("Set alarm for the items?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                setAlarmBtn.setText("Alarmed!");
-                                // state design
-                            //    startService(new Intent(getApplication(), VendHeadService.class));
+                                startService(new Intent(getApplication(), VendHeadService.class));
                                 getVendInfo();
                                 vendItems = new VendItems(currentItems, MainActivity.this);
                                 vendItems.saveItems();
                                 isAlarmSet = true;
+                                setAlarmBtn.setBackgroundResource(R.drawable.ic_alarmedicon);
                                 timer = new Timer();
                                 timer.scheduleAtFixedRate(new TimerTask() {
 

@@ -26,6 +26,7 @@ public class ParseVendingItems {
             if (url.equals("noshop")){
                 return;
             }
+            Log.d("test", "url is : " + url);
             Document doc = Jsoup.connect(url).userAgent("Mozilla, Chrome").timeout(300000).get();
             Elements prices = doc.getElementsByClass("price");
             Elements amounts = doc.getElementsByClass("amt");

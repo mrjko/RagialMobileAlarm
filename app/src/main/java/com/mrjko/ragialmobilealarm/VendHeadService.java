@@ -15,24 +15,28 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by jko on 16-04-12.
  */
-public class VendHeadService extends Service {
+public class VendHeadService extends Service implements Observer {
 
+    public int soldItemCount;
     private WindowManager windowManager;
-    private ImageView chatHead;
+    public ImageView chatHead;
     WindowManager.LayoutParams params;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("creating new chathead service");
+        soldItemCount = 0;
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         chatHead = new ImageView(this);
-        chatHead.setImageResource(R.drawable.alerticon);
+        chatHead.setImageResource(R.drawable.ic_launcher);
 
         params= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -62,15 +66,20 @@ public class VendHeadService extends Service {
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
+                        chatHead.setImageResource(R.drawable.alerticon);
                         return true;
                     case MotionEvent.ACTION_UP:
                         if (System.currentTimeMillis() - action_down_time < 0.25*1000) {
+                            /*
                             Intent intent = new Intent(VendHeadService.this, TradeInfo.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            */
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
+                        chatHead.setImageResource(R.drawable.alerticon);
+
                         params.x = initialX
                                 + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY
@@ -96,5 +105,17 @@ public class VendHeadService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void update() {
+        soldItemCount++;
+        if (soldItemCount < 3){
+            Log.d("test", "item count is smaller than 3 so we set image as few image");
+            this.chatHead.setImageResource(R.drawable.ic_launcher);
+        } else {
+            Log.d("test", "item count is greater than 3 so we set iamge as a greater image");
+            this.chatHead.setImageResource(R.drawable.alerticon);
+        }
     }
 }
